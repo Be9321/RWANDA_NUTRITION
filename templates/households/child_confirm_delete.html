@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete child{% endblock %}
+{% block page_title %}Delete child{% endblock %}
+
+{% block content %}
+<div class="card card-danger">
+  <div class="card-header"><h3 class="card-title">Please confirm</h3></div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="card-body">
+      <p>Are you sure you want to delete <b>{{ child.full_name }}</b>?
+         Their growth measurements, enrolments and referrals will also be deleted.</p>
+    </div>
+    <div class="card-footer">
+      <button type="submit" class="btn btn-danger">Yes, delete</button>
+      <a href="{% url 'households:child_list' %}" class="btn btn-default">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

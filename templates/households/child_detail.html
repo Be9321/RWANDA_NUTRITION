@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ child.full_name }}{% endblock %}
+{% block page_title %}Child details{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-5">
+    <div class="card card-primary card-outline">
+      <div class="card-body">
+        <h3 class="profile-username text-center">{{ child.full_name }}</h3>
+        <ul class="list-group list-group-unbordered mb-3">
+          <li class="list-group-item"><b>Sex</b> <span class="float-right">{{ child.get_sex_display }}</span></li>
+          <li class="list-group-item"><b>Date of birth</b> <span class="float-right">{{ child.date_of_birth }}</span></li>
+          <li class="list-group-item"><b>Age</b> <span class="float-right">{{ child.age_in_months }} months</span></li>
+          <li class="list-group-item"><b>Household</b> <span class="float-right">{{ child.household }}</span></li>
+          <li class="list-group-item"><b>Sector</b> <span class="float-right">{{ child.household.sector }}</span></li>
+        </ul>
+        <a href="{% url 'households:child_update' child.pk %}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+        <a href="{% url 'households:child_delete' child.pk %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+        <a href="{% url 'households:child_list' %}" class="btn btn-default">Back</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Growth measurements</h3></div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead><tr><th>Date</th><th>Weight (kg)</th><th>Height (cm)</th><th>Z-score</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for m in child.measurements.all %}
+            <tr>
+              <td>{{ m.measurement_date }}</td>
+              <td>{{ m.weight_kg }}</td>
+              <td>{{ m.height_cm }}</td>
+              <td>{{ m.height_for_age_z|default:"-" }}</td>
+              <td>{{ m.status }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center">No measurements yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

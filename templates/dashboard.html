@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-info">
+      <div class="inner"><h3>{{ child_count }}</h3><p>Children registered</p></div>
+      <div class="icon"><i class="fas fa-child"></i></div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-danger">
+      <div class="inner"><h3>{{ prevalence }}<sup style="font-size:20px">%</sup></h3><p>Stunting prevalence</p></div>
+      <div class="icon"><i class="fas fa-chart-line"></i></div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-success">
+      <div class="inner"><h3>{{ measured_this_month }}</h3><p>Measurements this month</p></div>
+      <div class="icon"><i class="fas fa-weight"></i></div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-warning">
+      <div class="inner"><h3>{{ open_referrals }}</h3><p>Open referrals</p></div>
+      <div class="icon"><i class="fas fa-hospital"></i></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Stunting rate by district (%)</h3></div>
+  <div class="card-body"><canvas id="districtChart" style="height:260px"></canvas></div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Highest-risk children (latest z-score below -2)</h3></div>
+  <div class="card-body table-responsive p-0">
+    <table class="table table-striped">
+      <thead>
+        <tr><th>Child</th><th>Age (months)</th><th>District</th><th>Sector</th><th>Z-score</th></tr>
+      </thead>
+      <tbody>
+        {% for c in high_risk %}
+        <tr>
+          <td>{{ c.full_name }}</td>
+          <td>{{ c.age_in_months }}</td>
+          <td>{{ c.household.sector.district.name }}</td>
+          <td>{{ c.household.sector.name }}</td>
+          <td><span class="badge badge-danger">{{ c.latest_z }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center">No high-risk children recorded.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_rates|json_script:"chart-rates" }}
+<script src="{% static 'adminlte/plugins/chart.js/Chart.min.js' %}"></script>
+<script>
+  new Chart(document.getElementById('districtChart'), {
+    type: 'bar',
+    data: {
+      labels: JSON.parse(document.getElementById('chart-labels').textContent),
+      datasets: [{
+        label: 'Stunting rate (%)',
+        data: JSON.parse(document.getElementById('chart-rates').textContent),
+        backgroundColor: '#dc3545'
+      }]
+    },
+    options: { scales: { yAxes: [{ ticks: { beginAtZero: true } }] } }
+  });
+</script>
+{% endblock %}
