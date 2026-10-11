@@ -23,3 +23,7 @@ urlpatterns = [
     path('', include('nutrition.urls')),
     path('households/', include('households.urls')),
 ]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'login'
