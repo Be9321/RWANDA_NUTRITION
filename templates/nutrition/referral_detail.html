@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Referral detail{% endblock %}
+{% block page_title %}Referral detail{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <ul class="list-group list-group-unbordered mb-3">
+      <li class="list-group-item"><b>Child</b> <span class="float-right">{{ object.child.full_name }}</span></li>
+      <li class="list-group-item"><b>Facility</b> <span class="float-right">{{ object.facility.name }}</span></li>
+      <li class="list-group-item"><b>Referred by</b> <span class="float-right">{{ object.referred_by|default:'Unknown' }}</span></li>
+      <li class="list-group-item"><b>Date</b> <span class="float-right">{{ object.referral_date }}</span></li>
+      <li class="list-group-item"><b>Reason</b> <span class="float-right">{{ object.reason }}</span></li>
+      <li class="list-group-item"><b>Status</b> <span class="float-right">{{ object.get_status_display }}</span></li>
+    </ul>
+    <a href="{% url 'nutrition:referral_update' object.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'nutrition:referral_delete' object.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'nutrition:referral_list' %}" class="btn btn-default">Back</a>
+  </div>
+</div>
+{% endblock %}

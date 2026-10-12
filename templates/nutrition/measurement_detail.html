@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Measurement detail{% endblock %}
+{% block page_title %}Measurement detail{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <ul class="list-group list-group-unbordered mb-3">
+      <li class="list-group-item"><b>Child</b> <span class="float-right">{{ object.child.full_name }}</span></li>
+      <li class="list-group-item"><b>Measured by</b> <span class="float-right">{{ object.measured_by|default:'Not recorded' }}</span></li>
+      <li class="list-group-item"><b>Date</b> <span class="float-right">{{ object.measurement_date }}</span></li>
+      <li class="list-group-item"><b>Weight</b> <span class="float-right">{{ object.weight_kg }} kg</span></li>
+      <li class="list-group-item"><b>Height</b> <span class="float-right">{{ object.height_cm }} cm</span></li>
+      <li class="list-group-item"><b>MUAC</b> <span class="float-right">{{ object.muac_cm|default:'-' }}</span></li>
+      <li class="list-group-item"><b>Z-score</b> <span class="float-right">{{ object.height_for_age_z|default:'-' }}</span></li>
+      <li class="list-group-item"><b>Status</b> <span class="float-right">{{ object.status }}</span></li>
+      <li class="list-group-item"><b>Notes</b> <span class="float-right">{{ object.notes|default:'-' }}</span></li>
+    </ul>
+    <a href="{% url 'nutrition:measurement_update' object.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'nutrition:measurement_delete' object.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'nutrition:measurement_list' %}" class="btn btn-default">Back</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,29 +1,64 @@
-﻿
 # Rwanda Nutrition
 
 Community child nutrition surveillance system for Rwanda, built with Django and AdminLTE.
 
-## Project Overview
+## Overview
 
-Rwanda Nutrition is a Django web application for recording households, children, growth measurements, nutrition programs and referrals, so that community health workers and district officers can identify high-risk children and areas early.
+Rwanda Nutrition is a Django web application designed to support child nutrition surveillance in Rwanda. It helps health workers track households, record child growth data, monitor program enrollment, and manage referrals for at-risk children.
 
-Course: Web Technologies and API Services (Master's in Big Data Analytics)
+The system is built to support a practical, data-driven nutrition monitoring workflow for community and district-level decision-making.
 
-## Technologies
+## Problem addressed
 
-- Python and Django
-- SQLite (development database)
+Malnutrition monitoring requires structured data collection across multiple levels:
+- households and household members
+- child records and age information
+- growth measurements
+- referral pathways
+- geographic coverage
+
+This project provides a simple and organized solution for managing those relationships in one application.
+
+## Features
+
+- Household registration and record management
+- Child registration with validation
+- Growth measurement tracking
+- Height-for-age z-score monitoring and risk analysis
+- Nutrition program enrollment tracking
+- Referral management for high-risk children
+- AdminLTE dashboard with summary cards and district-level analytics
+- Django admin integration for managing application data
+- Authentication flow for login/logout
+
+## Tech stack
+
+- Python
+- Django
+- SQLite
 - HTML, CSS, JavaScript
-- Bootstrap 4, AdminLTE 3.2.0, Chart.js, DataTables
+- Bootstrap and AdminLTE
+- Chart.js
 
-## Project Apps
+## Project structure
 
-- `accounts`: user roles and CHW profiles
-- `geography`: provinces, districts, sectors and health facilities
-- `households`: household and child records
-- `nutrition`: growth measurements, programs, enrolments and referrals
+- `accounts/` — authentication and user-related logic
+- `geography/` — provinces, districts, sectors, health facilities
+- `households/` — households and children
+- `nutrition/` — growth measurements, programs, enrollments, referrals
+- `templates/` — shared base layout and page templates
+- `config/` — Django project settings and URLs
 
-## Setup Instructions
+## Main app relationships
+
+- Province -> District -> Sector -> HealthFacility
+- Sector -> Household
+- Household -> Child
+- Child -> GrowthMeasurement
+- Child -> Enrollment -> Program
+- Child -> Referral
+
+## Setup instructions
 
 ### 1. Clone the repository
 
@@ -47,107 +82,57 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
-
-Set `DJANGO_SECRET_KEY` before starting Django, if the settings file asks for it. Configure any other required variables according to your settings.
-
-### 5. Apply database migrations and load demo data
+### 4. Apply migrations
 
 ```powershell
 python manage.py migrate
-python manage.py seed_demo
+```
+
+### 5. Create a superuser
+
+```powershell
 python manage.py createsuperuser
 ```
 
-### 6. Start the development server
+### 6. Seed demo data (optional)
+
+```powershell
+python manage.py seed_demo
+```
+
+### 7. Start the development server
 
 ```powershell
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/ in your browser.
+Open the project in the browser:
+- Dashboard: http://127.0.0.1:8000/
+- Admin: http://127.0.0.1:8000/admin/
 
-## Data note
+## Default admin access
 
-This prototype uses synthetic data only. Real child data is sensitive and needs ethical approval and compliance with Rwanda's data protection law.
+After creating a superuser, log in using the credentials you set during `createsuperuser`.
 
-## Security
+## Available pages
 
-Do not commit secret keys, passwords, environment files, virtual environments, or local database files to GitHub.
+- Dashboard
+- Households
+- Children
+- Growth measurements
+- Programs
+- Referrals
+- Admin panel
 
-## Team
+## Data privacy note
 
-- Member 1: Belyse URWIDUKUNDA
-- Member 2: Patience TURAYISHIMYE
-- Member 3: Medard Gasarabwe
+This project uses synthetic/demo data for development and learning purposes. Real child data should never be used without proper ethical approval and compliance with privacy and data protection requirements.
 
-## Development Status
+## Security note
 
-This project is under development.
+Do not commit secret keys, local database files, environment files, or virtual environments to version control.
 
-- Python
-- Django
-- SQLite (development database)
-- HTML, CSS, and JavaScript
+## Project status
 
-## Project Apps
-
-- `accounts` â€” account-related functionality
-- `geography` â€” geographical information
-- `households` â€” household and child records
-- `nutrition` â€” nutrition-related functionality
-
-## Setup Instructions
-
-### 1. Clone the repository
-
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd Rwanda_Nutrition
-```
-
-### 2. Create and activate a virtual environment
-
-On Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```powershell
-pip install -r requirements.txt
-```
-
-### 4. Configure environment variables
-
-Set `DJANGO_SECRET_KEY` before starting Django. Configure any other required environment variables according to your settings.
-
-### 5. Apply database migrations
-
-```powershell
-python manage.py migrate
-```
-
-### 6. Start the development server
-
-```powershell
-python manage.py runserver
-```
-
-Open http://127.0.0.1:8000/ in your browser.
-
-## Security
-
-Do not commit secret keys, passwords, environment files, virtual environments, or local database files to GitHub.
-
-## Development Status
-
-This project is under development.
-
-# RWANDA_NUTRITION
-
-Community child nutrition surveillance system for Rwanda, built with Django and AdminLTE.
+This is a functional Django prototype for the midterm project requirement, covering the main project structure, database modeling, CRUD features, AdminLTE dashboard integration, and project documentation.
 
