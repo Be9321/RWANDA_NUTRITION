@@ -77,8 +77,9 @@ Do not commit secret keys, passwords, environment files, virtual environments, o
 
 ## Team
 
-- Member 1: name
-- Member 2: name
+- Member 1: Belyse URWIDUKUNDA
+- Member 2: Patience TURAYISHIMYE
+- Member 3: Medard GASARABWE
 
 ## Development Status
 
@@ -91,10 +92,10 @@ This project is under development.
 
 ## Project Apps
 
-- `accounts` â€” account-related functionality
-- `geography` â€” geographical information
-- `households` â€” household and child records
-- `nutrition` â€” nutrition-related functionality
+- `accounts` : account-related functionality
+- `geography` : geographical information
+- `households` : household and child records
+- `nutrition` : nutrition-related functionality
 
 ## Setup Instructions
 

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.name }}{% endblock %}
+{% block page_title %}Program details{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h3>{{ object.name }}</h3>
+    <ul class="list-group list-group-unbordered mb-3">
+      <li class="list-group-item"><b>Start date</b> <span class="float-right">{{ object.start_date }}</span></li>
+      <li class="list-group-item"><b>Description</b> <span class="float-right text-left">{{ object.description|default:'-' }}</span></li>
+    </ul>
+    <a href="{% url 'nutrition:program_update' object.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'nutrition:program_delete' object.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'nutrition:program_list' %}" class="btn btn-default">Back</a>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header"><h3 class="card-title">Children enrolled</h3></div>
+  <div class="card-body">
+    {% if object.children.all %}
+      <ul>
+        {% for child in object.children.all %}
+          <li><a href="{% url 'households:child_detail' child.pk %}">{{ child.full_name }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No children enrolled yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
