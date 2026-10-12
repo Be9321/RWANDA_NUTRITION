@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Referrals{% endblock %}
+{% block page_title %}Referrals{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">All referrals to health facilities</h3>
+    <div class="card-tools">
+      <a href="{% url 'referral_create' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New referral</a>
+    </div>
+  </div>
+  <div class="card-body table-responsive p-0">
+    <table class="table table-striped">
+      <thead><tr><th>Child</th><th>Facility</th><th>Date</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for r in referrals %}
+        <tr>
+          <td><a href="{% url 'households:child_detail' r.child.pk %}">{{ r.child.full_name }}</a></td>
+          <td>{{ r.facility.name }}</td>
+          <td>{{ r.referral_date|date:"Y-m-d" }}</td>
+          <td>{{ r.reason }}</td>
+          <td>
+            {% if r.status == 'open' %}<span class="badge badge-warning">{{ r.get_status_display }}</span>
+            {% elif r.status == 'attended' %}<span class="badge badge-info">{{ r.get_status_display }}</span>
+            {% else %}<span class="badge badge-success">{{ r.get_status_display }}</span>{% endif %}
+          </td>
+          <td>
+            {% if r.status == 'open' %}
+            <form method="post" action="{% url 'referral_status' r.pk 'attended' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-info btn-xs" title="Mark as attended"><i class="fas fa-check"></i></button>
+            </form>
+            {% elif r.status == 'attended' %}
+            <form method="post" action="{% url 'referral_status' r.pk 'closed' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success btn-xs" title="Close referral"><i class="fas fa-flag-checkered"></i></button>
+            </form>
+            {% endif %}
+            <a href="{% url 'referral_update' r.pk %}" class="btn btn-warning btn-xs" title="Edit"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'referral_delete' r.pk %}" class="btn btn-danger btn-xs" title="Delete"><i class="fas fa-trash"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No referrals yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

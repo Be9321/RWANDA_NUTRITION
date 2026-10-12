@@ -14,6 +14,12 @@ class Province(models.Model):
 class District(models.Model):
     province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name='districts')
     name = models.CharField(max_length=100)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    photo = models.ImageField(upload_to='districts/', null=True, blank=True)
+    photo_credit = models.CharField(max_length=200, blank=True,
+                                    help_text='Photographer and licence, for example: Name, CC BY-SA 4.0')
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ['name']

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Programs{% endblock %}
+{% block page_title %}Nutrition programs{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">All programs</h3>
+    <div class="card-tools">
+      <a href="{% url 'program_create' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add program</a>
+    </div>
+  </div>
+  <div class="card-body table-responsive p-0">
+    <table class="table table-striped">
+      <thead><tr><th>Program</th><th>Start date</th><th>Children enrolled</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for p in programs %}
+        <tr>
+          <td><a href="{% url 'program_detail' p.pk %}">{{ p.name }}</a></td>
+          <td>{{ p.start_date|date:"Y-m-d" }}</td>
+          <td><span class="badge badge-info">{{ p.n_children }}</span></td>
+          <td>
+            <a href="{% url 'program_detail' p.pk %}" class="btn btn-info btn-xs"><i class="fas fa-eye"></i></a>
+            <a href="{% url 'program_update' p.pk %}" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'program_delete' p.pk %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center">No programs yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

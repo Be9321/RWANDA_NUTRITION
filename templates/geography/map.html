@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Map{% endblock %}
+{% block page_title %}Stunting map{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Districts colored by stunting rate (latest measurement per child)</h3>
+  </div>
+  <div class="card-body p-0">
+    <div id="map" style="height:520px"></div>
+  </div>
+  <div class="card-footer">
+    <span class="badge badge-success">below 20%</span>
+    <span class="badge badge-warning">20% to 29.9%</span>
+    <span class="badge badge-danger">30% or more</span>
+    <span class="badge badge-secondary">no data</span>
+    <span class="text-muted small ml-2">Demo data (synthetic).</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ points|json_script:"points" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const points = JSON.parse(document.getElementById('points').textContent);
+  const map = L.map('map').setView([-1.95, 29.9], 8);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  function colour(rate) {
+    if (rate === null) return '#6c757d';
+    if (rate >= 30) return '#dc3545';
+    if (rate >= 20) return '#fd7e14';
+    return '#28a745';
+  }
+
+  points.forEach(function (p) {
+    const marker = L.circleMarker([p.lat, p.lng], {
+      radius: 13, color: '#222', weight: 1,
+      fillColor: colour(p.rate), fillOpacity: 0.8
+    }).addTo(map);
+
+    const box = document.createElement('div');
+    if (p.photo) {
+      const img = document.createElement('img');
+      img.src = p.photo;
+      img.style.cssText = 'width:170px;border-radius:4px;margin-bottom:6px';
+      box.appendChild(img);
+    }
+    const info = document.createElement('div');
+    const title = document.createElement('b');
+    title.textContent = p.name + ' (' + p.province + ')';
+    info.appendChild(title);
+    info.appendChild(document.createElement('br'));
+    info.appendChild(document.createTextNode(
+      p.rate === null ? 'No measurements yet' : 'Stunting ' + p.rate + '% of ' + p.assessed + ' children'));
+    info.appendChild(document.createElement('br'));
+    const link = document.createElement('a');
+    link.href = p.url;
+    link.textContent = 'Open district';
+    info.appendChild(link);
+    box.appendChild(info);
+    marker.bindPopup(box);
+  });
+</script>
+{% endblock %}

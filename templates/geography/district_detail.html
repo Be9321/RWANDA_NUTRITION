@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ district.name }}{% endblock %}
+{% block page_title %}{{ district.name }} District{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-5">
+    <div class="card card-primary card-outline">
+      {% if district.photo %}
+        <img src="{{ district.photo.url }}" class="card-img-top" alt="{{ district.name }}" style="max-height:260px;object-fit:cover">
+        {% if district.photo_credit %}<div class="px-3 pt-1 text-muted small">Photo: {{ district.photo_credit }}</div>{% endif %}
+      {% endif %}
+      <div class="card-body">
+        <ul class="list-group list-group-unbordered mb-3">
+          <li class="list-group-item"><b>Province</b> <span class="float-right">{{ district.province.name }}</span></li>
+          <li class="list-group-item"><b>Coordinates</b>
+            <span class="float-right">{% if district.latitude %}{{ district.latitude }}, {{ district.longitude }}{% else %}-{% endif %}</span></li>
+          <li class="list-group-item"><b>Children assessed</b> <span class="float-right">{{ stats.assessed|default:0 }}</span></li>
+          <li class="list-group-item"><b>Stunting rate</b>
+            <span class="float-right">{% if stats %}<span class="badge badge-{{ stats.badge }}">{{ stats.rate }}%</span>{% else %}-{% endif %}</span></li>
+        </ul>
+        {% if district.description %}<p>{{ district.description }}</p>{% endif %}
+        <a href="{% url 'geography:district_list' %}" class="btn btn-default">Back</a>
+        <a href="{% url 'geography:map' %}" class="btn btn-info"><i class="fas fa-map"></i> Map</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Sectors in this district</h3></div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead><tr><th>Sector</th><th>Households</th></tr></thead>
+          <tbody>
+            {% for s in sectors %}
+            <tr><td>{{ s.name }}</td><td>{{ s.n_households }}</td></tr>
+            {% empty %}
+            <tr><td colspan="2" class="text-center">No sectors yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

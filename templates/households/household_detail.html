@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ household.household_code }}{% endblock %}
+{% block page_title %}Household {{ household.household_code }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-5">
+    <div class="card card-primary card-outline">
+      <div class="card-body">
+        <h3 class="profile-username text-center">{{ household.head_name }}</h3>
+        <ul class="list-group list-group-unbordered mb-3">
+          <li class="list-group-item"><b>Sector</b> <span class="float-right">{{ household.sector }}</span></li>
+          <li class="list-group-item"><b>Village</b> <span class="float-right">{{ household.village|default:"-" }}</span></li>
+          <li class="list-group-item"><b>Mother's education</b> <span class="float-right">{{ household.get_mother_education_display }}</span></li>
+          <li class="list-group-item"><b>Food security</b> <span class="float-right">{{ household.get_food_security_display }}</span></li>
+          <li class="list-group-item"><b>Sanitation</b> <span class="float-right">{{ household.get_sanitation_display }}</span></li>
+          <li class="list-group-item"><b>Water source</b> <span class="float-right">{{ household.get_water_source_display }}</span></li>
+          <li class="list-group-item"><b>Income</b> <span class="float-right">{{ household.get_income_category_display }}</span></li>
+        </ul>
+        <a href="{% url 'households:household_update' household.pk %}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+        <a href="{% url 'households:household_delete' household.pk %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+        <a href="{% url 'households:household_list' %}" class="btn btn-default">Back</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Children in this household</h3>
+        <div class="card-tools">
+          <a href="{% url 'households:child_create' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add child</a>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead><tr><th>Name</th><th>Sex</th><th>Age (months)</th></tr></thead>
+          <tbody>
+            {% for c in household.children.all %}
+            <tr>
+              <td><a href="{% url 'households:child_detail' c.pk %}">{{ c.full_name }}</a></td>
+              <td>{{ c.get_sex_display }}</td>
+              <td>{{ c.age_in_months }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center">No children registered yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

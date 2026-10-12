@@ -52,31 +52,51 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
           <li class="nav-item">
-            <a href="{% url 'dashboard' %}"
-               class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
               <i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>
             </a>
           </li>
 
           <li class="nav-header">REGISTRY</li>
-          <!-- Households gets its real URL when we add its CRUD -->
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{% url 'households:household_list' %}" class="nav-link {% if 'household' in request.resolver_match.url_name %}active{% endif %}">
               <i class="nav-icon fas fa-home"></i><p>Households</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'households:child_list' %}"
-               class="nav-link {% if 'child' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url 'households:child_list' %}" class="nav-link {% if 'child' in request.resolver_match.url_name %}active{% endif %}">
               <i class="nav-icon fas fa-child"></i><p>Children</p>
             </a>
           </li>
 
           <li class="nav-header">NUTRITION</li>
-          <!-- These get real URLs when we add their CRUD -->
-          <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon fas fa-weight"></i><p>Measurements</p></a></li>
-          <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon fas fa-hands-helping"></i><p>Programs</p></a></li>
-          <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon fas fa-hospital"></i><p>Referrals</p></a></li>
+          <li class="nav-item">
+            <a href="{% url 'measurement_list' %}" class="nav-link {% if 'measurement' in request.resolver_match.url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-weight"></i><p>Measurements</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'program_list' %}" class="nav-link {% if 'program' in request.resolver_match.url_name or 'enrollment' in request.resolver_match.url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-hands-helping"></i><p>Programs</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'referral_list' %}" class="nav-link {% if 'referral' in request.resolver_match.url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-hospital"></i><p>Referrals</p>
+            </a>
+          </li>
+
+          <li class="nav-header">GEOGRAPHY</li>
+          <li class="nav-item">
+            <a href="{% url 'geography:district_list' %}" class="nav-link {% if 'district' in request.resolver_match.url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-mountain"></i><p>Districts</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'geography:map' %}" class="nav-link {% if request.resolver_match.url_name == 'map' %}active{% endif %}">
+              <i class="nav-icon fas fa-map-marked-alt"></i><p>Map</p>
+            </a>
+          </li>
 
           <li class="nav-header">SYSTEM</li>
           <li class="nav-item">

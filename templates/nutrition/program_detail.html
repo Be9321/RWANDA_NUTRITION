@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ program.name }}{% endblock %}
+{% block page_title %}{{ program.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card card-primary card-outline">
+      <div class="card-body">
+        <ul class="list-group list-group-unbordered mb-3">
+          <li class="list-group-item"><b>Start date</b> <span class="float-right">{{ program.start_date|date:"Y-m-d" }}</span></li>
+          <li class="list-group-item"><b>Children enrolled</b> <span class="float-right">{{ enrollments|length }}</span></li>
+        </ul>
+        {% if program.description %}<p>{{ program.description }}</p>{% endif %}
+        <a href="{% url 'program_update' program.pk %}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+        <a href="{% url 'program_delete' program.pk %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+        <a href="{% url 'program_list' %}" class="btn btn-default">Back</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Enrolled children</h3>
+        <div class="card-tools">
+          <a href="{% url 'enrollment_create' program.pk %}" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Enroll a child</a>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead><tr><th>Child</th><th>Household</th><th>Enrolled on</th><th></th></tr></thead>
+          <tbody>
+            {% for e in enrollments %}
+            <tr>
+              <td><a href="{% url 'households:child_detail' e.child.pk %}">{{ e.child.full_name }}</a></td>
+              <td>{{ e.child.household.household_code }}</td>
+              <td>{{ e.enrolled_on|date:"Y-m-d" }}</td>
+              <td><a href="{% url 'enrollment_delete' e.pk %}" class="btn btn-danger btn-xs"><i class="fas fa-times"></i> Remove</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center">No children enrolled yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

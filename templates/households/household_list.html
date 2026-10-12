@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Households{% endblock %}
+{% block page_title %}Households{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">All registered households</h3>
+    <div class="card-tools">
+      <a href="{% url 'households:household_create' %}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus"></i> Add household
+      </a>
+    </div>
+  </div>
+  <div class="card-body">
+    <table id="householdTable" class="table table-bordered table-striped">
+      <thead>
+        <tr><th>Code</th><th>Head</th><th>Sector</th><th>District</th><th>Food security</th><th>Sanitation</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for h in households %}
+        <tr>
+          <td><a href="{% url 'households:household_detail' h.pk %}">{{ h.household_code }}</a></td>
+          <td>{{ h.head_name }}</td>
+          <td>{{ h.sector.name }}</td>
+          <td>{{ h.sector.district.name }}</td>
+          <td>{{ h.get_food_security_display }}</td>
+          <td>{{ h.get_sanitation_display }}</td>
+          <td>
+            <a href="{% url 'households:household_detail' h.pk %}" class="btn btn-info btn-xs"><i class="fas fa-eye"></i></a>
+            <a href="{% url 'households:household_update' h.pk %}" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'households:household_delete' h.pk %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'adminlte/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script>$(function () { $('#householdTable').DataTable({ columnDefs: [{ orderable: false, targets: 6 }] }); });</script>
+{% endblock %}
