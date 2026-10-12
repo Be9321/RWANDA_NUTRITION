@@ -77,8 +77,9 @@ Do not commit secret keys, passwords, environment files, virtual environments, o
 
 ## Team
 
-- Member 1: name
-- Member 2: name
+- Member 1: Belyse URWIDUKUNDA
+- Member 2: Patience TURAYISHIMYE
+- Member 3: Medard Gasarabwe
 
 ## Development Status
 
