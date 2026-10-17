@@ -1,153 +1,200 @@
-﻿
-# Rwanda Nutrition
+﻿# NutriTrack Rwanda
 
-Community child nutrition surveillance system for Rwanda, built with Django and AdminLTE.
+NutriTrack Rwanda is a Django web application for community child nutrition surveillance. It helps community health workers, district officers, and administrators record households, monitor children under five, track growth measurements, manage nutrition programmes, and follow up referrals.
 
-## Project Overview
+This project was developed for the **Web Technologies and API Services** course in the **Master's in Big Data Analytics** programme.
 
-Rwanda Nutrition is a Django web application for recording households, children, growth measurements, nutrition programs and referrals, so that community health workers and district officers can identify high-risk children and areas early.
+## Main capabilities
 
-Course: Web Technologies and API Services (Master's in Big Data Analytics)
+- Secure user authentication and Django administration
+- Community health worker profiles and role classification
+- Rwanda province, district, sector, and health-facility management
+- Household registration and socio-economic indicators
+- Child registration and under-five age validation
+- Growth measurements including weight, height, MUAC, and height-for-age z-score
+- Stunting-rate dashboard and Rwanda district map
+- Nutrition programme enrolment
+- Referrals to health facilities
+- Synthetic demo data for testing and presentations
+- Professional entity relationship diagram and project report
 
-## Technologies
+## Technology stack
 
-- Python and Django
-- SQLite (development database)
-- HTML, CSS, JavaScript
-- Bootstrap 4, AdminLTE 3.2.0, Chart.js, DataTables
+- Python 3.15
+- Django 6.1.2
+- SQLite for local development
+- HTML, CSS, and JavaScript
+- Bootstrap 4 and AdminLTE 3.2
+- Google Maps JavaScript API
+- Pillow, Chart.js, and DataTables
 
-## Project Apps
+## Application structure
 
-- `accounts`: user roles and CHW profiles
-- `geography`: provinces, districts, sectors and health facilities
-- `households`: household and child records
-- `nutrition`: growth measurements, programs, enrolments and referrals
+| App | Responsibility |
+| --- | --- |
+| accounts | Authentication, user roles, and community health worker profiles |
+| geography | Provinces, districts, sectors, and health facilities |
+| households | Household and child records |
+| nutrition | Growth measurements, programmes, enrolments, and referrals |
+| config | Django project settings and URL configuration |
 
-## Setup Instructions
+## Database relationships
 
-### 1. Clone the repository
+The main relationship chain is:
 
-```bash
+Province -> District -> Sector -> Household -> Child
+
+Nutrition services connect to children through growth measurements, programme enrolment through the Enrollment join table, and referrals to health facilities. Community health worker profiles are assigned to sectors.
+
+The local SQLite database is created as db.sqlite3 after migrations are applied.
+
+## Installation
+
+### 1. Clone the project
+
+~~~powershell
 git clone https://github.com/Be9321/RWANDA_NUTRITION.git
 cd RWANDA_NUTRITION
-```
+~~~
 
-### 2. Create and activate a virtual environment
+### 2. Create and activate the virtual environment
 
-On Windows PowerShell:
-
-```powershell
+~~~powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+.\\.venv\\Scripts\\Activate.ps1
+~~~
+
+If PowerShell blocks activation, run the project interpreter directly:
+
+~~~powershell
+.\\.venv\\Scripts\\python.exe manage.py migrate
+~~~
 
 ### 3. Install dependencies
 
-```powershell
+~~~powershell
 pip install -r requirements.txt
-```
+~~~
 
-### 4. Configure environment variables
+### 4. Configure the Google Maps API
 
-Set `DJANGO_SECRET_KEY` before starting Django, if the settings file asks for it. Configure any other required variables according to your settings.
+This is a private academic repository. The shared development .env file is included so team members can run the map after cloning.
 
-### 5. Apply database migrations and load demo data
+If .env is missing, copy the example:
 
-```powershell
+~~~powershell
+Copy-Item .env.example .env
+~~~
+
+The .env file should contain:
+
+~~~env
+DJANGO_SECRET_KEY=replace-with-a-secure-development-key
+GOOGLE_MAPS_API_KEY=your-google-maps-javascript-api-key
+~~~
+
+The Google key must be configured in Google Cloud Console with:
+
+- Maps JavaScript API enabled
+- HTTP referrer restrictions for local development
+- API restrictions limited to the required Google Maps APIs
+- Billing enabled if required by the Google Maps account
+
+Because the shared key is for a private academic repository, restrict it carefully and rotate it before any public or production deployment.
+
+### 5. Apply migrations
+
+~~~powershell
+python manage.py migrate
+~~~
+
+### 6. Create an administrator
+
+~~~powershell
+python manage.py createsuperuser
+~~~
+
+### 7. Load synthetic demo data
+
+~~~powershell
+python manage.py seed_demo
+python manage.py seed_districts
+~~~
+
+These commands can be rerun safely. The data is synthetic and does not represent real people.
+
+### Quick start
+
+After cloning and activating the virtual environment, run:
+
+~~~powershell
+pip install -r requirements.txt
 python manage.py migrate
 python manage.py seed_demo
-python manage.py createsuperuser
-```
-
-### 6. Start the development server
-
-```powershell
+python manage.py seed_districts
 python manage.py runserver
-```
+~~~
+### 8. Start the development server
 
-Open http://127.0.0.1:8000/ in your browser.
+~~~powershell
+python manage.py runserver
+~~~
 
-## Data note
+Open the application at:
 
-This prototype uses synthetic data only. Real child data is sensitive and needs ethical approval and compliance with Rwanda's data protection law.
+- Main application: http://127.0.0.1:8000/
+- Login: http://127.0.0.1:8000/accounts/login/
+- Django admin: http://127.0.0.1:8000/admin/
+- Stunting map: http://127.0.0.1:8000/geography/map/
 
-## Security
+## Project documentation
 
-Do not commit secret keys, passwords, environment files, virtual environments, or local database files to GitHub.
+- Editable ERD source: erd/rwanda_nutrition_erd.dbml
+- Rendered ERD diagram: erd/rwanda_nutrition_erd.svg
+- Project report: docs/Rwanda Nutrition Project report.pdf
 
-## Team
+The ERD source can be pasted into dbdiagram.io for interactive editing.
 
-- Member 1: Belyse URWIDUKUNDA
-- Member 2: Patience TURAYISHIMYE
-- Member 3: Medard Gasarabwe
+## Validation and useful commands
 
-## Development Status
+~~~powershell
+python manage.py check
+python manage.py showmigrations
+python manage.py test
+~~~
 
-This project is under development.
+After model changes:
 
-- Python
-- Django
-- SQLite (development database)
-- HTML, CSS, and JavaScript
-
-## Project Apps
-
-- `accounts` â€” account-related functionality
-- `geography` â€” geographical information
-- `households` â€” household and child records
-- `nutrition` â€” nutrition-related functionality
-
-## Setup Instructions
-
-### 1. Clone the repository
-
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd Rwanda_Nutrition
-```
-
-### 2. Create and activate a virtual environment
-
-On Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```powershell
-pip install -r requirements.txt
-```
-
-### 4. Configure environment variables
-
-Set `DJANGO_SECRET_KEY` before starting Django. Configure any other required environment variables according to your settings.
-
-### 5. Apply database migrations
-
-```powershell
+~~~powershell
+python manage.py makemigrations
 python manage.py migrate
-```
+~~~
 
-### 6. Start the development server
+## Data protection and security
 
-```powershell
-python manage.py runserver
-```
+This prototype uses synthetic data only. Real child and household information is sensitive and must be handled according to ethical approval requirements and applicable Rwanda data-protection obligations.
 
-Open http://127.0.0.1:8000/ in your browser.
+Before deployment:
 
-## Security
+- Replace the development secret key
+- Set DEBUG=False
+- Configure production ALLOWED_HOSTS
+- Use a production database
+- Restrict and rotate the Google Maps API key
+- Configure HTTPS
+- Back up the database securely
+- Do not use the shared development key in production
 
-Do not commit secret keys, passwords, environment files, virtual environments, or local database files to GitHub.
+## Team members
 
-## Development Status
+| No. | Student ID | Name |
+| ---: | --- | --- |
+| 1 | 20251MBI021 | Urwidukunda Belyse |
+| 2 | 20251MBI006 | Gasarabwe Medard |
+| 3 | 20251MBI048 | Turashimye Patience |
 
-This project is under development.
+## Project status
 
-# RWANDA_NUTRITION
+The project is a functional academic prototype with database migrations, synthetic demo data, authentication, administration, nutrition monitoring, referrals, a Rwanda map, an ERD, and supporting project documentation.
 
-Community child nutrition surveillance system for Rwanda, built with Django and AdminLTE.
 
