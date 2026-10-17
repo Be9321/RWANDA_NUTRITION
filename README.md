@@ -78,7 +78,7 @@ pip install -r requirements.txt
 
 ### 4. Configure the Google Maps API
 
-This is a private academic repository. The shared development .env file is included so team members can run the map after cloning.
+The .env file is local configuration and is intentionally not committed. Each team member must create their own .env from .env.example and add a restricted Google Maps API key.
 
 If .env is missing, copy the example:
 
@@ -100,7 +100,7 @@ The Google key must be configured in Google Cloud Console with:
 - API restrictions limited to the required Google Maps APIs
 - Billing enabled if required by the Google Maps account
 
-Because the shared key is for a private academic repository, restrict it carefully and rotate it before any public or production deployment.
+Never commit the real API key. Restrict it in Google Cloud to the approved development origins and rotate it if it is exposed.
 
 ### 5. Apply migrations
 
@@ -134,6 +134,7 @@ python manage.py seed_demo
 python manage.py seed_districts
 python manage.py runserver
 ~~~
+
 ### 8. Start the development server
 
 ~~~powershell
@@ -183,7 +184,8 @@ Before deployment:
 - Restrict and rotate the Google Maps API key
 - Configure HTTPS
 - Back up the database securely
-- Do not use the shared development key in production
+- Do not commit .env or production secrets
+- Rotate any API key that has been exposed
 
 ## Team members
 
@@ -196,5 +198,7 @@ Before deployment:
 ## Project status
 
 The project is a functional academic prototype with database migrations, synthetic demo data, authentication, administration, nutrition monitoring, referrals, a Rwanda map, an ERD, and supporting project documentation.
+
+
 
 
