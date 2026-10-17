@@ -1,0 +1,62 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200">
+<defs>
+ <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 Z" fill="#64748b"/></marker>
+ <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity=".14"/></filter>
+ <style>
+  .title{font:700 32px Arial;fill:#243b53}.subtitle{font:15px Arial;fill:#627d98}.section{font:700 13px Arial;letter-spacing:1.7px;fill:#829ab1}
+  .box{fill:#fff;stroke:#bcccdc;stroke-width:1.5;filter:url(#shadow)} .geo{fill:#276749}.identity{fill:#2b6cb0}.domain{fill:#553c9a}.service{fill:#c05621}
+  .name{font:700 16px Arial;fill:#fff}.field{font:13px Arial;fill:#334e68}.key{font-weight:700;fill:#1f7a65}.label{font:12px Arial;fill:#52606d;background:#fff}
+  .line{stroke:#829ab1;stroke-width:1.8;fill:none;marker-end:url(#arrow)} .dashed{stroke-dasharray:7 5}
+ </style>
+</defs>
+<rect width="1800" height="1200" fill="#f7fafc"/>
+<text x="55" y="55" class="title">NutriTrack Rwanda — Entity Relationship Diagram</text>
+<text x="55" y="83" class="subtitle">Community child nutrition surveillance system · Logical database schema</text>
+<text x="55" y="125" class="section">IDENTITY &amp; ACCESS</text>
+<text x="55" y="370" class="section">ADMINISTRATIVE GEOGRAPHY</text>
+<text x="55" y="665" class="section">HOUSEHOLDS &amp; CHILDREN</text>
+<text x="55" y="965" class="section">NUTRITION PROGRAMMES &amp; REFERRALS</text>
+
+<!-- relationship lines -->
+<path class="line" d="M245 215 H315"/><text x="255" y="202" class="label">1 : 0..1</text>
+<path class="line" d="M640 215 C790 215 850 285 850 400"/><text x="680" y="245" class="label">1 : many</text>
+<path class="line" d="M955 215 C1180 215 1430 270 1430 400"/><text x="1180" y="245" class="label">1 : many</text>
+
+<path class="line" d="M245 470 H315"/><text x="255" y="457" class="label">1 : many</text>
+<path class="line" d="M565 470 H635"/><text x="575" y="457" class="label">1 : many</text>
+<path class="line" d="M885 470 H955"/><text x="895" y="457" class="label">1 : many</text>
+<path class="line" d="M755 540 V700"/><text x="770" y="625" class="label">1 : many</text>
+<path class="line" d="M1075 540 V700"/><text x="1090" y="625" class="label">1 : many</text>
+
+<path class="line" d="M565 760 H635"/><text x="575" y="747" class="label">1 : many</text>
+<path class="line" d="M885 760 H955"/><text x="895" y="747" class="label">1 : many</text>
+<path class="line dashed" d="M485 910 C520 945 600 950 635 1010"/><text x="485" y="940" class="label">1 : many</text>
+<path class="line dashed" d="M755 910 C735 950 710 970 735 1010"/><text x="770" y="955" class="label">1 : many</text>
+<path class="line" d="M1355 540 V700"/><text x="1370" y="625" class="label">1 : many</text>
+<path class="line" d="M1430 540 C1430 620 1220 650 1115 700"/><text x="1260" y="640" class="label">1 : many</text>
+<path class="line dashed" d="M1535 215 C1680 300 1680 650 1460 700"/><text x="1635" y="460" class="label">1 : many</text>
+<path class="line dashed" d="M1535 215 C1740 350 1740 800 1115 700"/><text x="1680" y="770" class="label">1 : many</text>
+
+<!-- identity -->
+<g transform="translate(55,145)"><rect class="box" width="190" height="145" rx="8"/><rect class="identity" width="190" height="38" rx="8"/><text x="14" y="25" class="name">AUTH_USER</text><text x="14" y="62" class="field key">PK id</text><text x="14" y="84" class="field">username UK</text><text x="14" y="106" class="field">email</text><text x="14" y="128" class="field">staff / superuser flags</text></g>
+<g transform="translate(315,145)"><rect class="box" width="325" height="145" rx="8"/><rect class="identity" width="325" height="38" rx="8"/><text x="14" y="25" class="name">ACCOUNTS_CHWPROFILE</text><text x="14" y="62" class="field key">PK id · FK user_id (unique)</text><text x="14" y="84" class="field">FK sector_id · role</text><text x="14" y="106" class="field">phone</text><text x="14" y="128" class="field">One profile per authenticated user</text></g>
+<g transform="translate(1400,145)"><rect class="box" width="220" height="145" rx="8"/><rect class="identity" width="220" height="38" rx="8"/><text x="14" y="25" class="name">AUTH_USER USES</text><text x="14" y="62" class="field">measured_by_id</text><text x="14" y="84" class="field">referred_by_id</text><text x="14" y="106" class="field">SET NULL on deletion</text><text x="14" y="128" class="field">audit responsibility</text></g>
+
+<!-- geography -->
+<g transform="translate(55,390)"><rect class="box" width="190" height="150" rx="8"/><rect class="geo" width="190" height="38" rx="8"/><text x="14" y="25" class="name">PROVINCE</text><text x="14" y="62" class="field key">PK id</text><text x="14" y="84" class="field">name varchar(100) UK</text><text x="14" y="106" class="field">ordering: name</text></g>
+<g transform="translate(315,390)"><rect class="box" width="250" height="150" rx="8"/><rect class="geo" width="250" height="38" rx="8"/><text x="14" y="25" class="name">DISTRICT</text><text x="14" y="62" class="field key">PK id · FK province_id</text><text x="14" y="84" class="field">name · latitude · longitude</text><text x="14" y="106" class="field">photo · photo_credit</text><text x="14" y="128" class="field">description · unique per province</text></g>
+<g transform="translate(635,390)"><rect class="box" width="250" height="150" rx="8"/><rect class="geo" width="250" height="38" rx="8"/><text x="14" y="25" class="name">SECTOR</text><text x="14" y="62" class="field key">PK id · FK district_id</text><text x="14" y="84" class="field">name varchar(100)</text><text x="14" y="106" class="field">unique per district</text></g>
+<g transform="translate(955,390)"><rect class="box" width="250" height="150" rx="8"/><rect class="geo" width="250" height="38" rx="8"/><text x="14" y="25" class="name">HEALTH FACILITY</text><text x="14" y="62" class="field key">PK id · FK sector_id</text><text x="14" y="84" class="field">name varchar(150)</text><text x="14" y="106" class="field">facility_type: HP, HC, DH, RH</text></g>
+
+<!-- household domain -->
+<g transform="translate(315,680)"><rect class="box" width="250" height="160" rx="8"/><rect class="domain" width="250" height="38" rx="8"/><text x="14" y="25" class="name">HOUSEHOLD</text><text x="14" y="62" class="field key">PK id · FK sector_id</text><text x="14" y="84" class="field">household_code UK</text><text x="14" y="106" class="field">head_name · village</text><text x="14" y="128" class="field">food · water · sanitation</text><text x="14" y="150" class="field">income · registered_on</text></g>
+<g transform="translate(635,680)"><rect class="box" width="250" height="160" rx="8"/><rect class="domain" width="250" height="38" rx="8"/><text x="14" y="25" class="name">CHILD</text><text x="14" y="62" class="field key">PK id · FK household_id</text><text x="14" y="84" class="field">full_name · sex</text><text x="14" y="106" class="field">date_of_birth</text><text x="14" y="128" class="field">birth_weight_kg</text></g>
+<g transform="translate(955,680)"><rect class="box" width="250" height="160" rx="8"/><rect class="service" width="250" height="38" rx="8"/><text x="14" y="25" class="name">GROWTH MEASUREMENT</text><text x="14" y="62" class="field key">PK id · FK child_id</text><text x="14" y="84" class="field">FK measured_by_id</text><text x="14" y="106" class="field">date · weight · height</text><text x="14" y="128" class="field">MUAC · height-for-age z</text><text x="14" y="150" class="field">notes</text></g>
+<g transform="translate(1275,680)"><rect class="box" width="250" height="160" rx="8"/><rect class="service" width="250" height="38" rx="8"/><text x="14" y="25" class="name">REFERRAL</text><text x="14" y="62" class="field key">PK id · FK child_id</text><text x="14" y="84" class="field">FK facility_id</text><text x="14" y="106" class="field">FK referred_by_id</text><text x="14" y="128" class="field">date · reason · status</text></g>
+
+<!-- programmes -->
+<g transform="translate(315,1010)"><rect class="box" width="250" height="130" rx="8"/><rect class="service" width="250" height="38" rx="8"/><text x="14" y="25" class="name">PROGRAM</text><text x="14" y="62" class="field key">PK id</text><text x="14" y="84" class="field">name varchar(150) UK</text><text x="14" y="106" class="field">description · start_date</text></g>
+<g transform="translate(635,1010)"><rect class="box" width="250" height="130" rx="8"/><rect class="service" width="250" height="38" rx="8"/><text x="14" y="25" class="name">ENROLLMENT</text><text x="14" y="62" class="field key">PK id · FK child_id</text><text x="14" y="84" class="field key">FK program_id</text><text x="14" y="106" class="field">enrolled_on · unique pair</text></g>
+
+<text x="55" y="1170" class="subtitle">PK = primary key · FK = foreign key · UK = unique key · Solid lines = domain relationships · Dashed lines = audit/user relationships</text>
+</svg>
