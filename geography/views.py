@@ -1,5 +1,6 @@
 ﻿import re
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
@@ -87,5 +88,6 @@ def district_map(request):
             'photo': d.photo.url if d.photo else '',
             'url': reverse('geography:district_detail', args=[d.pk]),
         })
-    return render(request, 'geography/map.html', {'points': points})
+    return render(request, 'geography/map.html', {'points': points, 'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY})
+
 

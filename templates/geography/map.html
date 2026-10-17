@@ -4,10 +4,19 @@
 {% block page_title %}Stunting map{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   #map { height: 520px; background: #e8f1f5; }
   .map-loading { color: #52606d; font-size: .9rem; padding: 1rem; }
+  .map-note {
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    color: #52606d;
+    margin: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  }
 </style>
 {% endblock %}
 
@@ -17,31 +26,22 @@
     <h3 class="card-title">Districts colored by stunting rate (latest measurement per child)</h3>
   </div>
   <div class="card-body p-0">
-    <div id="map"><div class="map-loading">Loading district map…</div></div>
+    <div id="map"><div class="map-loading">Loading Google map…</div></div>
   </div>
   <div class="card-footer">
     <span class="badge badge-success">below 20%</span>
     <span class="badge badge-warning">20% to 29.9%</span>
     <span class="badge badge-danger">30% or more</span>
     <span class="badge badge-secondary">no data</span>
-    <span class="text-muted small ml-2">Demo data (synthetic).</span>
+    <span class="text-muted small ml-2">Synthetic demo data.</span>
   </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 {{ points|json_script:"points" }}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   const points = JSON.parse(document.getElementById('points').textContent);
-  const map = L.map('map').setView([-1.95, 29.9], 8);
-
-  // Carto's light basemap avoids the blocked OSM tile endpoint used previously.
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 18,
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-  }).addTo(map);
 
   function colour(rate) {
     if (rate === null) return '#6c757d';
@@ -50,26 +50,84 @@
     return '#28a745';
   }
 
-  points.forEach(function (p) {
-    const marker = L.circleMarker([p.lat, p.lng], {
-      radius: 11, color: '#243b53', weight: 1,
-      fillColor: colour(p.rate), fillOpacity: 0.85
-    }).addTo(map);
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (char) {
+      return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'}[char];
+    });
+  }
 
-    const box = document.createElement('div');
-    const title = document.createElement('b');
-    title.textContent = p.name + ' (' + p.province + ')';
-    box.appendChild(title);
-    box.appendChild(document.createElement('br'));
-    box.appendChild(document.createTextNode(
-      p.rate === null ? 'No measurements yet' : 'Stunting ' + p.rate + '% of ' + p.assessed + ' children'));
-    box.appendChild(document.createElement('br'));
-    const link = document.createElement('a');
-    link.href = p.url;
-    link.textContent = 'Open district';
-    box.appendChild(link);
-    marker.bindPopup(box);
-  });
+  function initMap() {
+    const rwandaBounds = {
+      north: -1.00,
+      south: -2.85,
+      west: 28.85,
+      east: 30.90
+    };
+    const map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: -1.95, lng: 29.9},
+      zoom: 8,
+      minZoom: 7,
+      maxZoom: 11,
+      restriction: {latLngBounds: rwandaBounds, strictBounds: true},
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true
+    });
+
+    const note = document.createElement('div');
+    note.className = 'map-note';
+    note.textContent = 'Google Maps · Synthetic demo data';
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(note);
+
+    const bounds = new google.maps.LatLngBounds();
+    const infoWindow = new google.maps.InfoWindow();
+
+    points.forEach(function (p) {
+      const position = {lat: Number(p.lat), lng: Number(p.lng)};
+      bounds.extend(position);
+
+      const marker = new google.maps.Marker({
+        position: position,
+        map: map,
+        title: p.name + ' (' + p.province + ')',
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 9,
+          fillColor: colour(p.rate),
+          fillOpacity: 0.9,
+          strokeColor: '#243b53',
+          strokeWeight: 1
+        }
+      });
+
+      marker.addListener('click', function () {
+        const result = p.rate === null
+          ? 'No measurements yet'
+          : 'Stunting ' + p.rate + '% of ' + p.assessed + ' children';
+        infoWindow.setContent(
+          '<strong>' + escapeHtml(p.name) + ' (' + escapeHtml(p.province) + ')</strong><br>' +
+          escapeHtml(result) + '<br><a href="' + escapeHtml(p.url) + '">Open district</a>'
+        );
+        infoWindow.open({anchor: marker, map: map});
+      });
+    });
+
+    if (points.length > 1) {
+      map.fitBounds(bounds, 35);
+      google.maps.event.addListenerOnce(map, 'idle', function () {
+        if (map.getZoom() > 9) map.setZoom(8);
+      });
+    }
+  }
 </script>
+{% if google_maps_api_key %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key|urlencode }}&callback=initMap"></script>
+{% else %}
+<script>
+  document.getElementById('map').innerHTML =
+    '<div class="alert alert-warning m-3">Google Maps API key is not configured.</div>';
+</script>
+{% endif %}
 {% endblock %}
+
 
