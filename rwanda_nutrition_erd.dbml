@@ -1,0 +1,133 @@
+﻿// NutriTrack Rwanda — Professional logical ERD
+// Paste into https://dbdiagram.io
+// Framework-only Django tables are omitted; auth_user is included because the domain uses it.
+
+Enum chw_role { chw officer admin }
+Enum facility_type { HP HC DH RH }
+Enum child_sex { F M }
+Enum referral_status { open attended closed }
+
+Table auth_user {
+  id bigint [pk, increment]
+  username varchar(150) [not null, unique]
+  email varchar(254)
+  password varchar(128) [not null, note: 'Hashed password']
+  is_staff boolean [not null, default: false]
+  is_superuser boolean [not null, default: false]
+  is_active boolean [not null, default: true]
+}
+
+Table geography_province {
+  id bigint [pk, increment]
+  name varchar(100) [not null, unique]
+}
+
+Table geography_district {
+  id bigint [pk, increment]
+  province_id bigint [not null]
+  name varchar(100) [not null]
+  latitude decimal(9,6)
+  longitude decimal(9,6)
+  photo varchar(100)
+  photo_credit varchar(200)
+  description text
+  indexes { (province_id, name) [unique] }
+}
+
+Table geography_sector {
+  id bigint [pk, increment]
+  district_id bigint [not null]
+  name varchar(100) [not null]
+  indexes { (district_id, name) [unique] }
+}
+
+Table geography_healthfacility {
+  id bigint [pk, increment]
+  sector_id bigint [not null]
+  name varchar(150) [not null]
+  facility_type facility_type [not null, default: 'HC']
+}
+
+Table accounts_chwprofile {
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
+  sector_id bigint
+  role chw_role [not null, default: 'chw']
+  phone varchar(20)
+}
+
+Table households_household {
+  id bigint [pk, increment]
+  household_code varchar(20) [not null, unique]
+  head_name varchar(120) [not null]
+  sector_id bigint [not null]
+  village varchar(100)
+  mother_education varchar(10)
+  food_security varchar(10)
+  sanitation varchar(10)
+  water_source varchar(12)
+  income_category varchar(10)
+  registered_on date [not null]
+}
+
+Table households_child {
+  id bigint [pk, increment]
+  household_id bigint [not null]
+  full_name varchar(120) [not null]
+  sex child_sex [not null]
+  date_of_birth date [not null]
+  birth_weight_kg decimal(4,2)
+}
+
+Table nutrition_program {
+  id bigint [pk, increment]
+  name varchar(150) [not null, unique]
+  description text
+  start_date date [not null]
+}
+
+Table nutrition_enrollment {
+  id bigint [pk, increment]
+  child_id bigint [not null]
+  program_id bigint [not null]
+  enrolled_on date [not null]
+  indexes { (child_id, program_id) [unique] }
+}
+
+Table nutrition_growthmeasurement {
+  id bigint [pk, increment]
+  child_id bigint [not null]
+  measured_by_id bigint
+  measurement_date date [not null]
+  weight_kg decimal(4,1) [not null]
+  height_cm decimal(4,1) [not null]
+  muac_cm decimal(3,1)
+  height_for_age_z decimal(4,2)
+  notes text
+}
+
+Table nutrition_referral {
+  id bigint [pk, increment]
+  child_id bigint [not null]
+  facility_id bigint [not null]
+  referred_by_id bigint
+  referral_date date [not null]
+  reason varchar(200) [not null]
+  status referral_status [not null, default: 'open']
+}
+
+Ref: geography_province.id < geography_district.province_id
+Ref: geography_district.id < geography_sector.district_id
+Ref: geography_sector.id < geography_healthfacility.sector_id
+Ref: auth_user.id - accounts_chwprofile.user_id
+Ref: geography_sector.id < accounts_chwprofile.sector_id
+Ref: geography_sector.id < households_household.sector_id
+Ref: households_household.id < households_child.household_id
+Ref: households_child.id < nutrition_enrollment.child_id
+Ref: nutrition_program.id < nutrition_enrollment.program_id
+Ref: households_child.id < nutrition_growthmeasurement.child_id
+Ref: auth_user.id < nutrition_growthmeasurement.measured_by_id
+Ref: households_child.id < nutrition_referral.child_id
+Ref: geography_healthfacility.id < nutrition_referral.facility_id
+Ref: auth_user.id < nutrition_referral.referred_by_id
+
