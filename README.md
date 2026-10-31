@@ -261,3 +261,5 @@ python manage.py train_stunting_model
 ~~~
 
 The classifier uses child age, sex, weight, height, MUAC, and household risk indicators. The training label is whether the recorded height-for-age z-score is below -2. The generated model artifact is stored locally under `model_artifacts/` and is ignored by Git. On deployment, `build.sh` seeds demo data when needed and trains the model automatically.
+
+MySQL test note: Django creates a temporary database named `test_rwanda_nutrition`. The database user used for automated tests must have permission to create and drop test databases. Keep those privileges limited to development/test credentials, not production credentials.
