@@ -1,4 +1,4 @@
-﻿# NutriTrack Rwanda
+# NutriTrack Rwanda
 
 NutriTrack Rwanda is a Django web application for community child nutrition surveillance. It helps community health workers, district officers, and administrators record households, monitor children under five, track growth measurements, manage nutrition programmes, and follow up referrals.
 
@@ -22,7 +22,8 @@ This project was developed for the **Web Technologies and API Services** course 
 
 - Python 3.15
 - Django 6.1.2
-- SQLite for local development
+- MySQL 8.4+ for shared/local database use
+- SQLite fallback for local development
 - HTML, CSS, and JavaScript
 - Bootstrap 4 and AdminLTE 3.2
 - Google Maps JavaScript API
@@ -46,7 +47,7 @@ Province -> District -> Sector -> Household -> Child
 
 Nutrition services connect to children through growth measurements, programme enrolment through the Enrollment join table, and referrals to health facilities. Community health worker profiles are assigned to sectors.
 
-The local SQLite database is created as db.sqlite3 after migrations are applied.
+The project uses `DATABASE_URL` when it is configured and falls back to the local `db.sqlite3` SQLite database when it is not. Never commit `.env` or database credentials.
 
 ## Installation
 
@@ -91,8 +92,19 @@ The .env file should contain:
 ~~~env
 DJANGO_SECRET_KEY=replace-with-a-secure-development-key
 GOOGLE_MAPS_API_KEY=your-google-maps-javascript-api-key
+DATABASE_URL=mysql://rwanda_user:your_password@127.0.0.1:3306/rwanda_nutrition
 ~~~
 
+For MySQL, create the database and user before running migrations:
+
+~~~sql
+CREATE DATABASE rwanda_nutrition CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'rwanda_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON rwanda_nutrition.* TO 'rwanda_user'@'localhost';
+FLUSH PRIVILEGES;
+~~~
+
+If the password contains URL-reserved characters, encode them in `DATABASE_URL` (for example, `@` becomes `%40`). Each developer should use a private `.env` file. A `127.0.0.1` database is local to that developer's computer; use a secured hosted MySQL instance if the team needs shared data.
 The Google key must be configured in Google Cloud Console with:
 
 - Maps JavaScript API enabled
@@ -108,6 +120,7 @@ Never commit the real API key. Restrict it in Google Cloud to the approved devel
 python manage.py migrate
 ~~~
 
+Migrations create the database schema but do not copy records from another database. To load synthetic data, run the seed commands below. To move an existing SQLite database to MySQL, export it while Django is using SQLite, restore the MySQL `DATABASE_URL`, run migrations, and then load the UTF-8 fixture with `python manage.py loaddata <fixture>.json`.
 ### 6. Create an administrator
 
 ~~~powershell
@@ -148,6 +161,36 @@ Open the application at:
 - Django admin: http://127.0.0.1:8000/admin/
 - Stunting map: http://127.0.0.1:8000/geography/map/
 
+## Free deployment with Render
+
+The repository includes `render.yaml`, `build.sh`, and production settings for deployment on Render.
+
+1. Create a free Render account and connect the GitHub repository.
+2. Create a free PostgreSQL database with a provider such as Neon.
+3. Create a Render Web Service from this repository, or use the Blueprint option so Render reads `render.yaml`.
+4. Add these environment variables in the Render service:
+
+~~~text
+DATABASE_URL=your-postgresql-connection-string
+GOOGLE_MAPS_API_KEY=your-restricted-google-maps-javascript-key
+~~~
+
+Render generates `DJANGO_SECRET_KEY` automatically from `render.yaml`. The service uses Gunicorn and the build script runs static-file collection, migrations, and synthetic demo-data commands.
+
+Set the final Render hostname in `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`, for example:
+
+~~~text
+ALLOWED_HOSTS=nutritrack-rwanda.onrender.com
+CSRF_TRUSTED_ORIGINS=https://nutritrack-rwanda.onrender.com
+~~~
+
+After deployment, create an administrator from the Render Shell:
+
+~~~bash
+python manage.py createsuperuser
+~~~
+
+Free services may sleep when idle. The hosted database should be PostgreSQL; SQLite is intended only for local development.
 ## Project documentation
 
 - Editable ERD source: erd/rwanda_nutrition_erd.dbml
@@ -198,7 +241,3 @@ Before deployment:
 ## Project status
 
 The project is a functional academic prototype with database migrations, synthetic demo data, authentication, administration, nutrition monitoring, referrals, a Rwanda map, an ERD, and supporting project documentation.
-
-
-
-
