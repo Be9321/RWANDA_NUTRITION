@@ -8,6 +8,7 @@ urlpatterns = [
     # API
     path('api/measurements/', api.measurement_api, name='measurement_api'),
     path('api/measurements/create/', api.measurement_api_create, name='measurement_api_create'),
+    path('api/measurements.csv', api.measurement_csv, name='measurement_csv'),
 
     # Measurements
     path('measurements/', views.MeasurementListView.as_view(), name='measurement_list'),

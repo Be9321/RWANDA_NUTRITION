@@ -53,6 +53,17 @@ def dashboard(request):
             risk_counts[prediction['risk_level']] += 1
         scored_measurements.append((measurement, prediction))
 
+    trend_labels, trend_values = [], []
+    for offset in range(5, -1, -1):
+        month_index = today.month - 1 - offset
+        year = today.year + month_index // 12
+        month = month_index % 12 + 1
+        trend_labels.append(f'{year}-{month:02d}')
+        trend_values.append(GrowthMeasurement.objects.filter(
+            measurement_date__year=year, measurement_date__month=month).count())
+    total_referrals = Referral.objects.count()
+    attended_referrals = Referral.objects.filter(status__in=['attended', 'closed']).count()
+    referral_completion = round(attended_referrals * 100 / total_referrals, 1) if total_referrals else 0
     model_info = model_summary()
     context = {
         'child_count': len(children),
@@ -64,6 +75,13 @@ def dashboard(request):
         'predicted_high_risk': risk_counts['High'],
         'predicted_moderate_risk': risk_counts['Moderate'],
         'model_accuracy': model_info['accuracy'],
+        'model_precision': model_info.get('precision'),
+        'model_recall': model_info.get('recall'),
+        'model_f1': model_info.get('f1'),
+        'model_trained_at': model_info.get('trained_at'),
+        'referral_completion': referral_completion,
+        'trend_labels': trend_labels,
+        'trend_values': trend_values,
         'model_available': model_info['available'],
         'model_sample_count': model_info['sample_count'],
         'recent_predictions': sorted(scored_measurements, key=lambda item: item[0].measurement_date, reverse=True)[:8],

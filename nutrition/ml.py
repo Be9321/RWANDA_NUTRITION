@@ -106,6 +106,10 @@ def model_summary():
     return {
         'available': True,
         'accuracy': bundle.get('accuracy'),
+        'precision': bundle.get('precision'),
+        'recall': bundle.get('recall'),
+        'f1': bundle.get('f1'),
+        'roc_auc': bundle.get('roc_auc'),
         'sample_count': bundle.get('sample_count', 0),
         'trained_at': bundle.get('trained_at'),
     }
@@ -116,7 +120,7 @@ def train_and_save_model():
 
     from sklearn.impute import SimpleImputer
     from sklearn.linear_model import LogisticRegression
-    from sklearn.metrics import accuracy_score, roc_auc_score
+    from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
     from sklearn.model_selection import train_test_split
     from sklearn.pipeline import Pipeline
     from sklearn.preprocessing import StandardScaler
@@ -146,7 +150,13 @@ def train_and_save_model():
     probabilities = pipeline.predict_proba(x_test)[:, 1]
     predictions = pipeline.predict(x_test)
 
-    metrics = {'accuracy': round(float(accuracy_score(y_test, predictions)) * 100, 1)}
+    metrics = {
+        'accuracy': round(float(accuracy_score(y_test, predictions)) * 100, 1),
+        'precision': round(float(precision_score(y_test, predictions, zero_division=0)) * 100, 1),
+        'recall': round(float(recall_score(y_test, predictions, zero_division=0)) * 100, 1),
+        'f1': round(float(f1_score(y_test, predictions, zero_division=0)) * 100, 1),
+        'confusion_matrix': confusion_matrix(y_test, predictions).tolist(),
+    }
     if len(set(y_test)) == 2:
         metrics['roc_auc'] = round(float(roc_auc_score(y_test, probabilities)), 3)
 
@@ -155,6 +165,10 @@ def train_and_save_model():
         'features': FEATURE_NAMES,
         'accuracy': metrics['accuracy'],
         'roc_auc': metrics.get('roc_auc'),
+        'precision': metrics['precision'],
+        'recall': metrics['recall'],
+        'f1': metrics['f1'],
+        'confusion_matrix': metrics['confusion_matrix'],
         'sample_count': len(rows),
         'trained_at': datetime.now(timezone.utc).isoformat(),
     }

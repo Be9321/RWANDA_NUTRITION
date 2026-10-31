@@ -43,6 +43,17 @@
   <div class="card-header"><h3 class="card-title">Predicted risk distribution</h3></div>
   <div class="card-body"><div style="max-width:420px"><canvas id="riskChart" style="height:220px"></canvas></div></div>
 </div>
+<div class="row">
+  <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fas fa-percentage"></i></span><div class="info-box-content"><span class="info-box-text">Referral completion</span><span class="info-box-number">{{ referral_completion }}%</span></div></div></div>
+  <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-primary"><i class="fas fa-crosshairs"></i></span><div class="info-box-content"><span class="info-box-text">Model precision</span><span class="info-box-number">{% if model_precision %}{{ model_precision }}%{% else %}--{% endif %}</span></div></div></div>
+  <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-success"><i class="fas fa-bullseye"></i></span><div class="info-box-content"><span class="info-box-text">Model recall</span><span class="info-box-number">{% if model_recall %}{{ model_recall }}%{% else %}--{% endif %}</span></div></div></div>
+  <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-secondary"><i class="fas fa-calendar-check"></i></span><div class="info-box-content"><span class="info-box-text">Last trained</span><span class="info-box-number" style="font-size:11px">{{ model_trained_at|default:'Not trained' }}</span></div></div></div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Measurement activity (last six months)</h3></div>
+  <div class="card-body"><canvas id="trendChart" style="height:220px"></canvas></div>
+</div>
 <div class="card">
   <div class="card-header"><h3 class="card-title">Stunting rate by district (%)</h3></div>
   <div class="card-body"><canvas id="districtChart" style="height:260px"></canvas></div>
@@ -95,8 +106,18 @@
 {{ chart_rates|json_script:"chart-rates" }}
 {{ risk_labels|json_script:"risk-labels" }}
 {{ risk_values|json_script:"risk-values" }}
+{{ trend_labels|json_script:"trend-labels" }}
+{{ trend_values|json_script:"trend-values" }}
 <script src="{% static 'adminlte/plugins/chart.js/Chart.min.js' %}"></script>
 <script>
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: JSON.parse(document.getElementById('trend-labels').textContent),
+      datasets: [{ label: 'Measurements', data: JSON.parse(document.getElementById('trend-values').textContent), borderColor: '#007bff', fill: false }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { yAxes: [{ ticks: { beginAtZero: true } }] } }
+  });
   new Chart(document.getElementById('riskChart'), {
     type: 'doughnut',
     data: {

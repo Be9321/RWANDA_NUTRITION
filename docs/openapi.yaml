@@ -1,0 +1,68 @@
+openapi: 3.0.3
+info:
+  title: NutriTrack Rwanda API
+  version: 1.0.0
+  description: Authenticated measurement and stunting-risk prediction endpoints.
+servers:
+  - url: http://127.0.0.1:8000
+security:
+  - sessionAuth: []
+paths:
+  /api/measurements/:
+    get:
+      summary: List recent measurements with predictions
+      responses:
+        '200':
+          description: Recent measurements and model metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeasurementList'
+        '302':
+          description: Redirect to login when unauthenticated
+  /api/measurements/create/:
+    post:
+      summary: Create a measurement and score it
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeasurementInput'
+      responses:
+        '201':
+          description: Measurement created and scored
+        '400':
+          description: Validation error
+  /api/measurements.csv:
+    get:
+      summary: Download measurements and predictions as CSV
+      responses:
+        '200':
+          description: CSV export
+          content:
+            text/csv: {}
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+  schemas:
+    MeasurementInput:
+      type: object
+      required: [child, measurement_date, weight_kg, height_cm]
+      properties:
+        child: {type: integer, example: 12}
+        measurement_date: {type: string, format: date, example: '2026-10-31'}
+        weight_kg: {type: number, example: 12.5}
+        height_cm: {type: number, example: 86.0}
+        muac_cm: {type: number, nullable: true, example: 13.0}
+        height_for_age_z: {type: number, nullable: true, example: -1.8}
+        notes: {type: string}
+    MeasurementList:
+      type: object
+      properties:
+        count: {type: integer}
+        model: {type: object}
+        results: {type: array, items: {type: object}}

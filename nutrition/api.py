@@ -1,7 +1,8 @@
+import csv
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 
 from .forms import MeasurementForm
@@ -49,3 +50,26 @@ def measurement_api_create(request):
         'message': 'Measurement created and scored successfully.',
         'prediction': predict_measurement(measurement),
     }, status=201)
+@login_required
+@require_http_methods(['GET'])
+def measurement_csv(request):
+    response = JsonResponse({}, status=200)
+    response = __import__('django.http', fromlist=['HttpResponse']).HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="nutrition_measurements.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['id', 'child', 'measurement_date', 'weight_kg', 'height_cm', 'muac_cm', 'height_for_age_z', 'predicted_risk', 'risk_probability'])
+    measurements = GrowthMeasurement.objects.select_related('child').order_by('-measurement_date', '-id')
+    for measurement in measurements:
+        prediction = predict_measurement(measurement)
+        writer.writerow([
+            measurement.id,
+            measurement.child.full_name,
+            measurement.measurement_date,
+            measurement.weight_kg,
+            measurement.height_cm,
+            measurement.muac_cm or '',
+            measurement.height_for_age_z or '',
+            prediction['risk_level'],
+            prediction['probability'] or '',
+        ])
+    return response

@@ -198,6 +198,7 @@ Free services may sleep when idle. The hosted database should be PostgreSQL; SQL
 - Editable ERD source: erd/rwanda_nutrition_erd.dbml
 - Rendered ERD diagram: erd/rwanda_nutrition_erd.svg
 - Project report: docs/Rwanda Nutrition Project report.pdf
+- API contract: docs/openapi.yaml
 
 The ERD source can be pasted into dbdiagram.io for interactive editing.
 
@@ -207,6 +208,7 @@ The ERD source can be pasted into dbdiagram.io for interactive editing.
 python manage.py check
 python manage.py showmigrations
 python manage.py test
+python manage.py train_stunting_model
 ~~~
 
 After model changes:
@@ -219,6 +221,8 @@ python manage.py migrate
 ## Data protection and security
 
 This prototype uses synthetic data only. Real child and household information is sensitive and must be handled according to ethical approval requirements and applicable Rwanda data-protection obligations.
+
+The model is decision-support only and is not a clinical diagnosis. Its training label is derived from the recorded height-for-age z-score, so production use requires independent clinical validation and monitoring for bias.
 
 Before deployment:
 
