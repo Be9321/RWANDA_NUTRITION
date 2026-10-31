@@ -12,6 +12,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from households.models import Child
 from .forms import MeasurementForm, ProgramForm, EnrollmentForm, ReferralForm
 from .models import GrowthMeasurement, Program, Enrollment, Referral
+from .ml import model_summary, predict_measurement
 
 
 # ---------- Dashboard ----------
@@ -40,6 +41,19 @@ def dashboard(request):
     labels = sorted(totals)
     rates = [round(totals[d][1] * 100 / totals[d][0], 1) for d in labels]
 
+    # Score the most recent measurement for each child when a trained model exists.
+    latest_measurements = {}
+    for measurement in GrowthMeasurement.objects.select_related('child__household__sector__district').order_by('-measurement_date', '-id'):
+        latest_measurements.setdefault(measurement.child_id, measurement)
+    scored_measurements = []
+    risk_counts = {'High': 0, 'Moderate': 0, 'Low': 0}
+    for measurement in latest_measurements.values():
+        prediction = predict_measurement(measurement)
+        if prediction['available']:
+            risk_counts[prediction['risk_level']] += 1
+        scored_measurements.append((measurement, prediction))
+
+    model_info = model_summary()
     context = {
         'child_count': len(children),
         'prevalence': prevalence,
@@ -47,6 +61,14 @@ def dashboard(request):
             measurement_date__year=today.year, measurement_date__month=today.month).count(),
         'open_referrals': Referral.objects.filter(status='open').count(),
         'high_risk': sorted(stunted, key=lambda c: c.latest_z)[:10],
+        'predicted_high_risk': risk_counts['High'],
+        'predicted_moderate_risk': risk_counts['Moderate'],
+        'model_accuracy': model_info['accuracy'],
+        'model_available': model_info['available'],
+        'model_sample_count': model_info['sample_count'],
+        'recent_predictions': sorted(scored_measurements, key=lambda item: item[0].measurement_date, reverse=True)[:8],
+        'risk_labels': list(risk_counts),
+        'risk_values': list(risk_counts.values()),
         'chart_labels': labels,
         'chart_rates': rates,
     }

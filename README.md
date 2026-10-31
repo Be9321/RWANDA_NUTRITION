@@ -132,6 +132,7 @@ python manage.py createsuperuser
 ~~~powershell
 python manage.py seed_demo
 python manage.py seed_districts
+python manage.py train_stunting_model
 ~~~
 
 These commands can be rerun safely. The data is synthetic and does not represent real people.
@@ -145,6 +146,7 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py seed_demo
 python manage.py seed_districts
+python manage.py train_stunting_model
 python manage.py runserver
 ~~~
 
@@ -241,3 +243,17 @@ Before deployment:
 ## Project status
 
 The project is a functional academic prototype with database migrations, synthetic demo data, authentication, administration, nutrition monitoring, referrals, a Rwanda map, an ERD, and supporting project documentation.
+## Prediction API and model training
+
+The project exposes authenticated JSON endpoints backed by the Django database:
+
+- `GET /api/measurements/` returns recent measurements and model risk scores.
+- `POST /api/measurements/create/` validates and stores an incoming measurement, then returns its predicted stunting risk.
+
+Train or retrain the model from labelled measurements with:
+
+~~~powershell
+python manage.py train_stunting_model
+~~~
+
+The classifier uses child age, sex, weight, height, MUAC, and household risk indicators. The training label is whether the recorded height-for-age z-score is below -2. The generated model artifact is stored locally under `model_artifacts/` and is ignored by Git. On deployment, `build.sh` seeds demo data when needed and trains the model automatically.

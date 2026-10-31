@@ -1,8 +1,13 @@
 from django.urls import path
 from . import views
+from . import api
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
+
+    # API
+    path('api/measurements/', api.measurement_api, name='measurement_api'),
+    path('api/measurements/create/', api.measurement_api_create, name='measurement_api_create'),
 
     # Measurements
     path('measurements/', views.MeasurementListView.as_view(), name='measurement_list'),

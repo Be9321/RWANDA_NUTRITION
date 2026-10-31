@@ -5,4 +5,4 @@ python manage.py collectstatic --no-input
 python manage.py migrate
 python manage.py seed_demo
 python manage.py seed_districts
-
+python manage.py train_stunting_model

@@ -32,11 +32,39 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="col-lg-3 col-6"><div class="small-box bg-danger"><div class="inner"><h3>{{ predicted_high_risk }}</h3><p>Predicted high risk</p></div><div class="icon"><i class="fas fa-exclamation-triangle"></i></div></div></div>
+  <div class="col-lg-3 col-6"><div class="small-box bg-warning"><div class="inner"><h3>{{ predicted_moderate_risk }}</h3><p>Predicted moderate risk</p></div><div class="icon"><i class="fas fa-notes-medical"></i></div></div></div>
+  <div class="col-lg-3 col-6"><div class="small-box bg-primary"><div class="inner"><h3>{% if model_accuracy %}{{ model_accuracy }}%{% else %}--{% endif %}</h3><p>Model validation accuracy</p></div><div class="icon"><i class="fas fa-brain"></i></div></div></div>
+  <div class="col-lg-3 col-6"><div class="small-box bg-secondary"><div class="inner"><h3>{{ model_sample_count }}</h3><p>Training measurements</p></div><div class="icon"><i class="fas fa-database"></i></div></div></div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Predicted risk distribution</h3></div>
+  <div class="card-body"><div style="max-width:420px"><canvas id="riskChart" style="height:220px"></canvas></div></div>
+</div>
 <div class="card">
   <div class="card-header"><h3 class="card-title">Stunting rate by district (%)</h3></div>
   <div class="card-body"><canvas id="districtChart" style="height:260px"></canvas></div>
 </div>
 
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Latest model predictions</h3></div>
+  <div class="card-body table-responsive p-0">
+    <table class="table table-striped">
+      <thead><tr><th>Child</th><th>Date</th><th>Z-score</th><th>Predicted risk</th><th>Probability</th></tr></thead>
+      <tbody>
+        {% for measurement, prediction in recent_predictions %}
+        <tr>
+          <td>{{ measurement.child.full_name }}</td><td>{{ measurement.measurement_date }}</td><td>{{ measurement.height_for_age_z|default:'Not assessed' }}</td>
+          <td><span class="badge {% if prediction.risk_level == 'High' %}badge-danger{% elif prediction.risk_level == 'Moderate' %}badge-warning{% else %}badge-success{% endif %}">{{ prediction.risk_level }}</span></td>
+          <td>{% if prediction.probability %}{{ prediction.probability }}%{% else %}--{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="5" class="text-center">No measurements available for prediction.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 <div class="card">
   <div class="card-header"><h3 class="card-title">Highest-risk children (latest z-score below -2)</h3></div>
   <div class="card-body table-responsive p-0">
@@ -65,8 +93,18 @@
 {% block extra_js %}
 {{ chart_labels|json_script:"chart-labels" }}
 {{ chart_rates|json_script:"chart-rates" }}
+{{ risk_labels|json_script:"risk-labels" }}
+{{ risk_values|json_script:"risk-values" }}
 <script src="{% static 'adminlte/plugins/chart.js/Chart.min.js' %}"></script>
 <script>
+  new Chart(document.getElementById('riskChart'), {
+    type: 'doughnut',
+    data: {
+      labels: JSON.parse(document.getElementById('risk-labels').textContent),
+      datasets: [{ data: JSON.parse(document.getElementById('risk-values').textContent), backgroundColor: ['#dc3545', '#ffc107', '#28a745'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
   new Chart(document.getElementById('districtChart'), {
     type: 'bar',
     data: {
